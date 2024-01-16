@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import Banner from './componentes/Banner';
 import Formulario from './componentes/Formulario';
 import Time from './componentes/Time';
@@ -7,44 +8,43 @@ import Rodape from './componentes/Rodape';
 
 function App() {
 
-  const times = [
+  const [times, setTimes] = useState([
     {
+      id: uuidv4(),
       nome: 'Programação',
-      corPrimaria: '#57C278',
-      corSecundaria: '#D9F7E9',
+      cor: '#D9F7E9',
     },
     {
+      id: uuidv4(),
       nome: 'Front-End',
-      corPrimaria: '#82CFFA',
-      corSecundaria: '#E8F8FF',
+      cor: '#E8F8FF',
     },
     {
+      id: uuidv4(),
       nome: 'Data Sciense',
-      corPrimaria: '#A6D157',
-      corSecundaria: '#F0F8E2',
+      cor: '#F0F8E2',
     },
     {
+      id: uuidv4(),
       nome: 'Devops',
-      corPrimaria: '#E06B69',
-      corSecundaria: '#FDE7E8',
+      cor: '#FDE7E8',
     },
     {
+      id: uuidv4(),
       nome: 'UX e Design',
-      corPrimaria: '#D86EBF',
-      corSecundaria: '#FAE5F5',
+      cor: '#FAE5F5',
     },
     {
+      id: uuidv4(),
       nome: 'Mobile',
-      corPrimaria: '#FEBA05',
-      corSecundaria: '#FFF5D9',
+      cor: '#FFF5D9',
     },
     {
+      id: uuidv4(),
       nome: 'Inovação e Gestão',
-      corPrimaria: '#FF8A29',
-      corSecundaria: '#FFEEDF',
+      cor: '#FFEEDF',
     }
-
-  ]
+  ])
 
   const [colaboradores, setColaboradores] = useState([])
 
@@ -55,32 +55,62 @@ function App() {
     // colaboradoresAtualizado.push(colaborador)
     // setColaboradores(colaboradoresAtualizado)
 
-    setColaboradores([...colaboradores, colaborador])
+    const novoColaborador = { ...colaborador, id: uuidv4(), favorito: false }
+    setColaboradores([...colaboradores, novoColaborador])
 
     //Fazer isto é a mesma coisa que excutar o código comentado acima, porém deste modo, acontece que o React atualiza o estado de maneira assíncrona. Isso significa que, quando você chama setColaboradores([...colaboradores, colaborador]), o React agenda uma atualização do estado, mas não a executa imediatamente.
     // Logo após essa chamada, quando você faz console.log(colaboradores), o estado ainda não foi atualizado, por isso você vê a lista vazia. O estado será atualizado em algum momento no futuro, antes do próximo render, por isso usamos o useEffect logo abaixo para 
 
   }
 
-  useEffect(() => {
-    colaboradores.forEach(element => {
-      console.log(element.nome)
-    });
-    console.log(colaboradores);  // aqui, colaboradores terá o valor atualizado
-  }, [colaboradores]);
+  // useEffect(() => {
+  //   colaboradores.forEach(element => {
+  //     console.log(element.nome)
+  //   });
+  //   console.log(colaboradores);  // aqui, colaboradores terá o valor atualizado
+  // }, [colaboradores]);
+
+  function deletarColaborador(id) {
+    setColaboradores(colaboradores.filter(colaborador => colaborador.id !== id))
+  }
+
+  function mudarCorDoTime(cor, id) {
+    setTimes(times.map(time => {
+      if (time.id === id) {
+        time.cor = cor
+      }
+      return time
+    }))
+  }
+
+  function cadastrarTime(novoTime) {
+    setTimes([...times, { ...novoTime, id: uuidv4() }])
+  }
+
+  function resolverFavorito(id) {
+    setColaboradores(colaboradores.map(colaborador => {
+      if (colaborador.id === id) colaborador.favorito = !colaborador.favorito
+      return colaborador
+    }))
+  }
 
   return (
     <div className="App">
       <Banner />
-      <Formulario times = {times.map(time => time.nome)} aoColaboradorCadastrado={colaborador => aoNovoColaborador(colaborador)} />
-      {times.map(time => <Time  
-       key = {time.nome} 
-       nome = {time.nome} 
-       corPrimaria = {time.corPrimaria} 
-       corSecundaria = {time.corSecundaria}
-       colaboradores = {colaboradores.filter(colaborador => colaborador.time === time.nome)} 
-      />)}
-      <Rodape/>
+      <Formulario times={times.map(time => time.nome)} aoColaboradorCadastrado={colaborador => aoNovoColaborador(colaborador)} cadastrarTime={cadastrarTime} />
+      {times.map(time =>
+        <Time
+          mudarCor={mudarCorDoTime}
+          key={time.nome}
+          nome={time.nome}
+          cor={time.cor}
+          id={time.id}
+          colaboradores={colaboradores.filter(colaborador => colaborador.time === time.nome)}
+          aoDeletar={deletarColaborador}
+          aoFavoritar={resolverFavorito}
+        />
+      )}
+      <Rodape />
     </div>
   );
 }

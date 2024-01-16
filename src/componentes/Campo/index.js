@@ -1,9 +1,11 @@
 import { useState } from 'react'
-import './CampoTexto.css'
+import './Campo.css'
 
-const CampoTexto = (props) => {
+const Campo = (props) => {
 
-    const placeholderModoficada = `Digite ${props.placeholder}`
+    let { type = "text" } = props;
+
+    const placeholderModificada = `Digite ${props.placeholder}`
 
 
     //Um hook é um gancho. É algo que o React nos entrega para que seja possível manter um estado dentro de uma função. O hook que vamos usar aqui é o useState. Sempre que encontrarem um o use, saibam que é um hook. O React já importa ele direto.
@@ -17,13 +19,19 @@ const CampoTexto = (props) => {
     // const aoDigitado = (evento) => {
     //     props.aoAlterado(evento.target.value)
     // } 
-    
+
     return (
-        <div className="campo-texto">
+        <div className={`campo campo-${props.type}`}>
             <label>{props.label}</label>
-            <input value = {props.valor} onChange = {evento => props.aoAlterado(evento.target.value)} required = {props.obrigatorio} placeholder={placeholderModoficada}></input>
+            <input
+                type={type}
+                value={props.valor}
+                onChange={evento => props.aoAlterado(evento.target.value)}
+                required={props.obrigatorio}
+                placeholder={placeholderModificada}>
+            </input>
         </div>
     )
 }
 
-export default CampoTexto
+export default Campo
